@@ -1,3 +1,7 @@
+This is Brkhu's fork of plugin hexo-filter-tikzjax. He is trying to draw better tikz pictures on transparent backgrounds.
+
+---
+
 # hexo-filter-tikzjax
 
 [![Latest Version](https://badgen.net/npm/v/hexo-filter-tikzjax)](https://www.npmjs.com/package/hexo-filter-tikzjax)
