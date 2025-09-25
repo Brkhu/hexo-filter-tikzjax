@@ -1,5 +1,7 @@
 This is Brkhu's fork of plugin hexo-filter-tikzjax. He is trying to draw better tikz pictures on transparent backgrounds.
 
+This fork is specifically created for the theme NexT.
+
 ---
 
 # hexo-filter-tikzjax
