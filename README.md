@@ -2,6 +2,23 @@ This is Brkhu's fork of plugin hexo-filter-tikzjax. He is trying to draw better 
 
 This fork is specifically created for the theme NexT.
 
+A function `removeWhiteBackground` is added in the file `process-svg-cd.ts`. It turns the whole SVG figure into a mask, and applies it to a rectangle of color `fill="var(--text-color)"`. It also scales the original figure by a factor of $1.5$.
+
+It is designed for black and white SVG figures. Lines in the result SVG will be a little thicker than original ones.
+
+To use it, one should use `tikzcd`:
+````markdown
+```tikzcd
+\begin{document}
+  \begin{tikzpicture}
+    % Your code here...
+  \end{tikzpicture}
+\end{document}
+```
+````
+
+If one still uses `tikz`, the original SVG figure will be rendered.
+
 ---
 
 # hexo-filter-tikzjax
