@@ -49,7 +49,7 @@ export function insertSvg(this: Hexo, html: string, locals: TemplateLocals): str
 
     if (svg) {
       if (match[1]) {
-        const svg_cd = removeWhiteBackground(svg);
+        const svg_cd = removeWhiteBackground(svg, hash);
         html = html.replace(match[0], `<p><span class="tikzjax">${svg_cd}</span></p>`);
         debug('SVG commutative diagram inserted!', hash);
       }
