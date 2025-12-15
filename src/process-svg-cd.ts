@@ -1,4 +1,4 @@
-export function removeWhiteBackground(svg: string): string {
+export function removeWhiteBackground(svg: string, hash: string): string {
     const widthHeightViewBoxRegex = /width="([\d\.]+)" height="([\d\.]+)" viewBox="(-?[\d\.]+) (-?[\d\.]+) ([\d\.]+) ([\d\.]+)"/;
     const widthHeightViewBox = svg.match(widthHeightViewBoxRegex);
 
@@ -27,7 +27,7 @@ export function removeWhiteBackground(svg: string): string {
             <filter id="invert">
                 <feColorMatrix in="SourceGraphic" type="matrix" values="-1 0 0 0 1  0 -1 0 0 1  0 0 -1 0 1  0 0 0 1 0" />
             </filter>
-            <mask id="opacity-mask">
+            <mask id="opacity-mask-${hash}">
                 <g filter="url(#invert)">
                     <rect x="${rectX}" y="${rectY}" width="${rectWidth}" height="${rectHeight}" fill="white"/>
                     ${originalContent}
