@@ -34,7 +34,7 @@ export function removeWhiteBackground(svg: string, hash: string): string {
                 </g>
             </mask>
         </defs>
-        <rect x="${rectX}" y="${rectY}" width="${rectWidth}" height="${rectHeight}" fill="var(--text-color)" mask="url(#opacity-mask)"/>
+        <rect x="${rectX}" y="${rectY}" width="${rectWidth}" height="${rectHeight}" fill="var(--text-color)" mask="url(#opacity-mask-${hash})"/>
     `;
 
     return `${openingTag}${newSvgContent}</svg>`;
