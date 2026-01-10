@@ -19,8 +19,8 @@ export async function renderTikzjax(this: Hexo, data: PostData): Promise<PostDat
   const error = (...args: any[]) => this.log.error.apply(this.log, [logPrefix, ...args]);
   taskQueue.setLogger({ debug, error });
 
-  // Find all TikZ code blocks in Markdown source. Here we handle tikz and tikzcd separately.
-  const regex = /```tikz(cd)?\n([\s\S]+?)```/g;
+  // Find all TikZ code blocks in Markdown source. Here we handle tikz and tikz-mask separately.
+  const regex = /```tikz(-mask)?(-scale(?:=[\d\.]+)?)?\n([\s\S]+?)```/g;
   const matches = data.content.matchAll(regex);
 
   for await (const match of matches) {
@@ -29,8 +29,8 @@ export async function renderTikzjax(this: Hexo, data: PostData): Promise<PostDat
     let svg = localStorage.getItem(hash);
 
     if (!svg) {
-      //match[0]=full string, match[1]=empty or cd, match[2]=tex codes
-      const input = match[2]?.trim();
+      //match[0]=full string, match[1]=empty or -mask, match[2]=-scale or -scale=..., match[3]=tex codes
+      const input = match[3]?.trim();
       if (!input) {
         continue;
       }
@@ -62,15 +62,9 @@ export async function renderTikzjax(this: Hexo, data: PostData): Promise<PostDat
 
     // Replace the TikZ code block with a placeholder
     // so that we can insert the SVG later in `insertSvg` function.
-    // We also use different placeholders for tikz and tikzcd blocks.
-    if (match[1]) {
-      const placeholder = `<!-- tikzjax-cd-placeholder-${hash} -->`;
-      data.content = data.content.replace(match[0], placeholder);
-    }
-    else {
-      const placeholder = `<!-- tikzjax-placeholder-${hash} -->`;
-      data.content = data.content.replace(match[0], placeholder);
-    }
+
+    let placeholder = `<!-- tikzjax${match[1]??''}${match[2]??''}-placeholder-${hash} -->`;
+    data.content = data.content.replace(match[0], placeholder);
   }
 
   return data;

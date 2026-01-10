@@ -1,6 +1,6 @@
 import type Hexo from 'hexo';
 import { PluginConfig, TemplateLocals, localStorage } from './common';
-import {removeWhiteBackground} from './process-svg-cd';
+import { rescale, createMaskedSVG } from './process-svg-cd';
 
 /**
  * Insert generated SVGs into HTML of the post as inline tags.
@@ -34,12 +34,16 @@ export function insertSvg(this: Hexo, html: string, locals: TemplateLocals): str
   );
 
   // Find all TikZ placeholders inserted by `renderTikzjax`.
-  const regex = /<!-- tikzjax-(cd-)?placeholder-(\w+?) -->/g;
+  const regex = /<!-- tikzjax(-mask)?(-scale(?:=[\d\.]+)?)?-placeholder-(\w+?) -->/g;
+  // Group 0: full match
+  // Group 1: -mask (optional)
+  // Group 2: -scale or -scale=... (optional)
+  // Group 3: hash
   const matches = html.matchAll(regex);
   const debug = (...args: any[]) => this.log.debug('[hexo-filter-tikzjax]', ...args);
 
   for (const match of matches) {
-    const hash = match[2]?.trim();
+    const hash = match[3]?.trim();
     if (!hash) {
       continue;
     }
@@ -48,15 +52,17 @@ export function insertSvg(this: Hexo, html: string, locals: TemplateLocals): str
     debug('Looking for SVG in cache...', hash);
 
     if (svg) {
+      let svg_insert = svg;
       if (match[1]) {
-        const svg_cd = removeWhiteBackground(svg, hash);
-        html = html.replace(match[0], `<p><span class="tikzjax">${svg_cd}</span></p>`);
-        debug('SVG commutative diagram inserted!', hash);
+        svg_insert = createMaskedSVG(svg_insert, hash);
       }
-      else {
-        html = html.replace(match[0], `<p><span class="tikzjax">${svg}</span></p>`);
-        debug('SVG inserted!', hash);
+      if (match[2]) {
+        const scaleMatch = match[2].match(/-scale=([\d\.]+)/);
+        const scale = scaleMatch ? parseFloat(scaleMatch[1]!) : config.scale;
+        svg_insert = rescale(svg_insert, scale);
       }
+      html = html.replace(match[0], `<p><span class="tikzjax">${svg_insert}</span></p>`);
+      debug('SVG inserted!', hash);
     } else {
       debug('SVG not found in cache. Skipped.', hash);
     }

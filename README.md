@@ -1,23 +1,64 @@
-This is Brkhu's fork of plugin hexo-filter-tikzjax. He is trying to draw better tikz pictures on transparent backgrounds.
+**This is Brkhu's fork of plugin hexo-filter-tikzjax. He is trying to draw better tikz pictures on transparent backgrounds.**
 
 This fork is specifically created for the theme NexT.
 
-A function `removeWhiteBackground` is added in the file `process-svg-cd.ts`. It turns the whole SVG figure into a mask, and applies it to a rectangle of color `fill="var(--text-color)"`. It also scales the original figure by a factor of $1.5$.
+Two optional parameters are added to the original plugin to support different rendering modes: `mask` and `scale`. `mask` mode will draw the TikZ picture on a mask layer with inverted colors, and apply it to a colored rectangle which creates a transparent background effect. `scale` mode will scale the TikZ picture by a specified factor.
 
-It is designed for black and white SVG figures. Lines in the result SVG will be a little thicker than original ones.
+Here are some examples of how to use these new features.
 
-To use it, one should use `tikzcd`:
+1. Default mode (no `mask` or `scale`): just use `tikz` as the code block language.
+
+2. Enable `mask` mode by adding `-mask` to the code block language:
+    ````markdown
+    ```tikz-mask
+    \begin{document}
+        \begin{tikzpicture}
+            % Your code here...
+        \end{tikzpicture}
+    \end{document}
+    ```
+    ````
+
+    Sometimes this will produce thicker lines. This mode is designed for black and white pictures using white color as erasers, e.g., commutative diagrams with `crossing over` arrows.
+
+3. Enable `scale` mode by adding `-scale` or `-scale=...` to the code block language:
+    ````markdown
+    ```tikz-scale=2
+    \begin{document}
+        \begin{tikzpicture}
+            % Your code here...
+        \end{tikzpicture}
+    \end{document}
+    ```
+    ````
+
+    If no number is specified, the default scale factor (1.5x) will be used. One can also set the default scale factor in `_config.yml` as follows:
+    ```yml
+    tikzjax:
+      scale: # Your default scale factor
+    ```
+
+4. Combine both `mask` and `scale` modes by using `mask-scale(=...)`. Notice the order of `mask` and `scale` in the code block language matters, `-tikz-scale(=...)-mask` is not supported.
+
+Here is a comparison of different modes using the same TikZ code:
 ````markdown
-```tikzcd
+```tikz(-mask)(-scale(=...))
 \begin{document}
-  \begin{tikzpicture}
-    % Your code here...
-  \end{tikzpicture}
+    \begin{tikzcd}
+        & D \\
+        A && B \\
+        & C
+        \arrow[from=2-1, to=2-3]
+        \arrow[crossing over, dashed, from=3-2, to=1-2]
+    \end{tikzcd}
 \end{document}
 ```
 ````
 
-If one still uses `tikz`, the original SVG figure will be rendered.
+![comparison](docs/comparison.png)
+
+First row: default mode, mask mode, scale mode (1.5x)  
+Second row: scale mode (2x), mask + scale mode (2x)
 
 ---
 

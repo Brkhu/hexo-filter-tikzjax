@@ -9,6 +9,7 @@ export const defaultConfig = {
   font_css_url: 'https://cdn.jsdelivr.net/npm/node-tikzjax@latest/css/fonts.css',
   every_page: false,
   tikzjax_options: {} as TeXOptions & SvgOptions,
+  scale: 1.5,
 };
 
 /**
