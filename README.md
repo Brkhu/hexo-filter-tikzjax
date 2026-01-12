@@ -1,12 +1,12 @@
-**This is Brkhu's fork of plugin hexo-filter-tikzjax. He is trying to draw better tikz pictures on transparent backgrounds.**
+This is Brkhu's fork of plugin hexo-filter-tikzjax. He is trying to draw better tikz pictures on transparent backgrounds.
 
-This fork is specifically created for the theme NexT.
+*This fork is specifically created for the theme NexT.*
 
-Two optional parameters are added to the original plugin to support different rendering modes: `mask` and `scale`. `mask` mode will draw the TikZ picture on a mask layer with inverted colors, and apply it to a colored rectangle which creates a transparent background effect. `scale` mode will scale the TikZ picture by a specified factor.
+Three optional parameters are added to the original plugin to support different rendering modes: `mask`, `color` and `scale`. `mask` mode will draw the TikZ picture on a mask layer with inverted colors, and apply it to a colored rectangle which creates a transparent background effect. `color` mode will replace a specified color in the TikZ picture with another color, useful for adapting to light/dark themes. `scale` mode will scale the TikZ picture by a specified factor.
 
 Here are some examples of how to use these new features.
 
-1. Default mode (no `mask` or `scale`): just use `tikz` as the code block language.
+1. Default mode (no `mask`, `color` or `scale`): just use `tikz` as the code block language.
 
 2. Enable `mask` mode by adding `-mask` to the code block language:
     ````markdown
@@ -21,7 +21,28 @@ Here are some examples of how to use these new features.
 
     Sometimes this will produce thicker lines. This mode is designed for black and white pictures using white color as erasers, e.g., commutative diagrams with `crossing over` arrows.
 
-3. Enable `scale` mode by adding `-scale` or `-scale=...` to the code block language:
+3. Enable `color` mode by adding `-color` to the code block language:
+    ````markdown
+    ```tikz-color
+    \begin{document}
+        \begin{tikzpicture}
+            % Your code here...
+        \end{tikzpicture}
+    \end{document}
+    ```
+    ````
+
+    This mode will replace a specified color in the TikZ picture with another color. By default, it replaces `#6cf` with `var(--text-color)`, which is a CSS variable for text color in NexT-Pisces theme. You can change these colors to fit your needs in `_config.yml`:
+    ```yml
+    tikzjax:
+      color_replacement:
+        from: # Use any color you like here. E.g., "#6cf" for #66ccff, and "#39c5bb" for #39c5bb.
+        to: # Use CSS variable for text color to adapt to light/dark themes. In NexT-Pisces, it's "var(--text-color)".
+    ```
+    
+    Compared to `mask` mode, this mode will not cause thicker lines, and it works for colored pictures as well.
+
+4. Enable `scale` mode by adding `-scale` or `-scale=...` to the code block language:
     ````markdown
     ```tikz-scale=2
     \begin{document}
@@ -38,27 +59,20 @@ Here are some examples of how to use these new features.
       scale: # Your default scale factor
     ```
 
-4. Combine both `mask` and `scale` modes by using `mask-scale(=...)`. Notice the order of `mask` and `scale` in the code block language matters, `-tikz-scale(=...)-mask` is not supported.
+<!-- 4. Combine both `mask` and `scale` modes by using `mask-scale(=...)`. Notice the order of `mask` and `scale` in the code block language matters, `-tikz-scale(=...)-mask` is not supported. -->
 
-Here is a comparison of different modes using the same TikZ code:
-````markdown
-```tikz(-mask)(-scale(=...))
-\begin{document}
-    \begin{tikzcd}
-        & D \\
-        A && B \\
-        & C
-        \arrow[from=2-1, to=2-3]
-        \arrow[crossing over, dashed, from=3-2, to=1-2]
-    \end{tikzcd}
-\end{document}
-```
-````
+Notice that these modes can be combined in following way: `tikz-mask-scale(=...)`, `tikz-color-scale(=...)`.
 
-![comparison](docs/comparison.png)
+Here are some comparisons of different modes:
+
+![comparison1](docs/comparison1.png)
 
 First row: default mode, mask mode, scale mode (1.5x)  
 Second row: scale mode (2x), mask + scale mode (2x)
+
+![comparison2](docs/comparison2.png)
+
+First row: scale mode (1.5x), color + scale mode (1.5x), mask + scale mode (1.5x)
 
 ---
 

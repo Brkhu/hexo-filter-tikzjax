@@ -70,3 +70,7 @@ export function createMaskedSVG(svg: string, hash: string): string {
 
     return svg.replace(originalOpeningTag, newOpeningTag).replace(/<\/svg>/, newClosingTag);
 }
+
+export function colorReplace(svg: string, from: string, to: string): string {
+    return svg.replace(new RegExp(from, 'g'), to);
+}

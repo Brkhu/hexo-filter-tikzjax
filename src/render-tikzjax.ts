@@ -20,12 +20,12 @@ export async function renderTikzjax(this: Hexo, data: PostData): Promise<PostDat
   taskQueue.setLogger({ debug, error });
 
   // Find all TikZ code blocks in Markdown source. Here we handle tikz and tikz-mask separately.
-  const regex = /```tikz(-mask)?(-scale(?:=[\d\.]+)?)?\n([\s\S]+?)```/g;
+  const regex = /```tikz(-mask|-color)?(-scale(?:=[\d\.]+)?)?\n([\s\S]+?)```/g;
   const matches = data.content.matchAll(regex);
 
   for await (const match of matches) {
     // Generate a hash for each TikZ code block as its cache key.
-    const hash = md5(JSON.stringify(match[0]) + JSON.stringify(config));
+    const hash = md5(JSON.stringify(match[3]) + JSON.stringify(config));
     let svg = localStorage.getItem(hash);
 
     if (!svg) {

@@ -1,6 +1,6 @@
 import type Hexo from 'hexo';
 import { PluginConfig, TemplateLocals, localStorage } from './common';
-import { rescale, createMaskedSVG } from './process-svg-cd';
+import { rescale, createMaskedSVG, colorReplace } from './process-svg';
 
 /**
  * Insert generated SVGs into HTML of the post as inline tags.
@@ -34,7 +34,7 @@ export function insertSvg(this: Hexo, html: string, locals: TemplateLocals): str
   );
 
   // Find all TikZ placeholders inserted by `renderTikzjax`.
-  const regex = /<!-- tikzjax(-mask)?(-scale(?:=[\d\.]+)?)?-placeholder-(\w+?) -->/g;
+  const regex = /<!-- tikzjax(-mask|-color)?(-scale(?:=[\d\.]+)?)?-placeholder-(\w+?) -->/g;
   // Group 0: full match
   // Group 1: -mask (optional)
   // Group 2: -scale or -scale=... (optional)
@@ -54,7 +54,12 @@ export function insertSvg(this: Hexo, html: string, locals: TemplateLocals): str
     if (svg) {
       let svg_insert = svg;
       if (match[1]) {
-        svg_insert = createMaskedSVG(svg_insert, hash);
+        if (match[1]==='-mask') {
+          svg_insert = createMaskedSVG(svg_insert, hash);
+        }
+        else if (match[1]==='-color') {
+          svg_insert = colorReplace(svg_insert, config.color_replacement.from, config.color_replacement.to);
+        }
       }
       if (match[2]) {
         const scaleMatch = match[2].match(/-scale=([\d\.]+)/);

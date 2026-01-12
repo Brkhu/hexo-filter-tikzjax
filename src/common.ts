@@ -10,6 +10,10 @@ export const defaultConfig = {
   every_page: false,
   tikzjax_options: {} as TeXOptions & SvgOptions,
   scale: 1.5,
+  color_replacement: {
+    from: "#6cf",
+    to: "var(--text-color)",
+  },
 };
 
 /**
